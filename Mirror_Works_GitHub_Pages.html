@@ -1,0 +1,78 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mirror Works — Project Gallery</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;font-family:Arial,sans-serif}.gallery{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#fff;border-radius:0}.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .32s ease;pointer-events:none}.slide.active{opacity:1;visibility:visible;pointer-events:auto}.slide>img{display:block;width:100%;height:100%;object-fit:contain}.slide .ba9vhwj5{width:100%;height:100%;border-radius:0!important}.dots{position:absolute;bottom:16px;right:16px;display:flex;align-items:center;gap:9px;z-index:10;background:rgba(0,0,0,.35);padding:9px 12px;border-radius:20px}.dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.5);border:0;padding:0;cursor:pointer}.dot.active{background:white;box-shadow:0 0 0 2px rgba(255,255,255,.35)}.dot:focus-visible{outline:2px solid #fff;outline-offset:3px}.ba9vhwj5-lbl{position:absolute;top:12px;padding:6px 12px;border-radius:999px;background:rgba(12,12,14,.72);color:#fff;font:600 13px/1 system-ui,sans-serif;pointer-events:none}
+
+.play-toggle{width:12px;height:14px;display:grid;place-items:center;border:0;padding:0;margin-right:3px;background:transparent;color:#fff;cursor:pointer;opacity:.9}
+.play-toggle svg{display:block;width:12px;height:12px;fill:currentColor}
+.play-toggle:focus-visible{outline:2px solid white;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){.slide{transition:none}}
+</style></head><body><main class="gallery" aria-label="Mirror Works project images">
+<section class="slide active" id="slide1" aria-label="Before and after comparison"><!-- Before/After slider by Before After Studio -->
+<div class="ba9vhwj5" id="ba9vhwj5" style="position:relative;max-width:100%;overflow:hidden;user-select:none;touch-action:pan-y;border-radius:0;background:#111;line-height:0">
+  <img src="https://cgol93.github.io/retouching-portfolio/after.jpg" alt="After" style="display:block;width:100%;height:auto" draggable="false">
+  <div class="ba9vhwj5-before" style="position:absolute;inset:0;width:50%;overflow:hidden">
+    <img src="https://cgol93.github.io/retouching-portfolio/before.jpg" alt="Before" style="display:block;height:100%;width:auto;max-width:none;position:absolute;left:0;top:0" draggable="false">
+  </div>
+  <div class="ba9vhwj5-handle" style="position:absolute;top:0;bottom:0;left:50%;width:4px;background:#ffffff;transform:translateX(-50%);pointer-events:none"><div style="position:absolute;top:50%;left:50%;width:44px;height:44px;border-radius:50%;background:#ffffff;transform:translate(-50%,-50%);box-shadow:0 2px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font:700 16px/1 system-ui,sans-serif;color:#111111">&#8249;&nbsp;&#8250;</div>
+  </div>
+    <span class="ba9vhwj5-lbl" style="left:12px">Before</span>
+    <span class="ba9vhwj5-lbl" style="right:12px">After</span>
+</div>
+</section>
+<section class="slide" id="slide2" aria-label="Exterior finished render"><img src="https://cgol93.github.io/retouching-portfolio/image-1.jpg" alt="Mirror Works exterior finished visualisation"></section>
+<section class="slide" id="slide3" aria-label="Reception finished render"><img src="https://cgol93.github.io/retouching-portfolio/image-2.jpg" alt="Mirror Works reception finished visualisation"></section>
+<nav class="dots" aria-label="Gallery playback and image selection"><button class="play-toggle" type="button" aria-label="Pause automatic slideshow" aria-pressed="true" title="Pause slideshow"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1h3v10H2zM7 1h3v10H7z"/></svg></button><button class="dot active" type="button" aria-label="Before and after" aria-current="true" data-slide="0"></button><button class="dot" type="button" aria-label="Exterior" data-slide="1"></button><button class="dot" type="button" aria-label="Reception" data-slide="2"></button></nav></main>
+<script>
+(function(){
+const gallery=document.querySelector('.gallery');
+const slides=[...gallery.querySelectorAll('.slide')];
+const dots=[...gallery.querySelectorAll('.dot')];
+const toggle=gallery.querySelector('.play-toggle');
+const root=document.getElementById('ba9vhwj5');
+const before=root.querySelector('.ba9vhwj5-before');
+const img=before.querySelector('img');
+const handle=root.querySelector('.ba9vhwj5-handle');
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let current=0,playing=!reduced,dragging=false,timeout=null,frame=null;
+let position=50;
+const waitBeforeDemo=10000,slideInterval=6000,sweepDuration=6200,sweepCount=3,sweepGap=650;
+function fit(){img.style.width=root.clientWidth+'px';img.style.height='auto';img.style.maxWidth='none'}
+function setPercent(p){position=Math.max(0,Math.min(100,p));before.style.width=position+'%';handle.style.left=position+'%'}
+function setX(x){const r=root.getBoundingClientRect();setPercent((x-r.left)/r.width*100)}
+function cancel(){clearTimeout(timeout);timeout=null;if(frame!==null)cancelAnimationFrame(frame);frame=null}
+function show(n){current=(n+slides.length)%slides.length;slides.forEach((s,i)=>{s.classList.toggle('active',i===current);s.setAttribute('aria-hidden',i===current?'false':'true')});dots.forEach((d,i)=>{d.classList.toggle('active',i===current);if(i===current)d.setAttribute('aria-current','true');else d.removeAttribute('aria-current')})}
+function updateToggle(){toggle.setAttribute('aria-label',playing?'Pause automatic slideshow':'Play automatic slideshow');toggle.setAttribute('title',playing?'Pause slideshow':'Play slideshow');toggle.setAttribute('aria-pressed',String(playing));toggle.innerHTML=playing?'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1h3v10H2zM7 1h3v10H7z"/></svg>':'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1L11 6 2 11z"/></svg>'}
+function schedule(ms){if(!playing||document.hidden)return;timeout=setTimeout(()=>{show(current+1);if(current===0)begin(700);else schedule(slideInterval)},ms)}
+function sweep(repetition=0){
+ if(!playing||document.hidden||current!==0)return;
+ const initial=position;
+ // Reveal the After image first by moving left, then sweep right and return to centre.
+ const keyframes=[initial,10,90,50];const fractions=[0,.35,.77,1];
+ const start=performance.now();
+ function tick(now){
+  if(!playing||document.hidden||current!==0)return;
+  const t=Math.min(1,(now-start)/sweepDuration);
+  let segment=0;while(segment<2&&t>fractions[segment+1])segment++;
+  const u=(t-fractions[segment])/(fractions[segment+1]-fractions[segment]);
+  const smooth=u*u*(3-2*u);
+  setPercent(keyframes[segment]+(keyframes[segment+1]-keyframes[segment])*smooth);
+  if(t<1)frame=requestAnimationFrame(tick);
+  else{frame=null;if(repetition+1<sweepCount)timeout=setTimeout(()=>sweep(repetition+1),sweepGap);else schedule(1300)}
+ }
+ frame=requestAnimationFrame(tick);
+}
+function begin(wait){cancel();if(!playing||document.hidden)return;if(current===0)timeout=setTimeout(()=>sweep(0),wait);else schedule(wait)}
+function pause(){playing=false;cancel();updateToggle()}
+function resume(){playing=true;updateToggle();begin(current===0?waitBeforeDemo:slideInterval)}
+dots.forEach((d,i)=>d.addEventListener('click',()=>{pause();show(i)}));
+toggle.addEventListener('click',()=>{if(playing)pause();else resume()});
+root.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;pause();dragging=true;root.setPointerCapture(e.pointerId);setX(e.clientX)});
+root.addEventListener('pointermove',e=>{if(dragging)setX(e.clientX)});
+root.addEventListener('pointerup',()=>dragging=false);
+root.addEventListener('pointercancel',()=>dragging=false);
+gallery.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){pause();show(current+(e.key==='ArrowRight'?1:-1))}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)cancel();else if(playing)begin(current===0?waitBeforeDemo:slideInterval)});
+if(window.ResizeObserver)new ResizeObserver(fit).observe(root);else window.addEventListener('resize',fit);
+img.addEventListener('load',fit);fit();updateToggle();show(0);if(playing)begin(waitBeforeDemo);
+})();
+</script></body></html>
